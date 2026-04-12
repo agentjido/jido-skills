@@ -1,0 +1,33 @@
+{
+  "generatedAt": "2026-04-12T20:50:22.475Z",
+  "skills": {
+    "hex-release": {
+      "name": "hex-release",
+      "hash": "d06c71d8f4ff169d9c01f2d5928b338a97de4c60ba42839f5c6317937658bcaa"
+    },
+    "jido-action": {
+      "name": "jido-action",
+      "hash": "35450df16cc3cd48fbfce0f7091d6ab854ee99fc6afdb4b9847078cc4a632138"
+    },
+    "jido-agent": {
+      "name": "jido-agent",
+      "hash": "4928d4d5636580ca31bf698cdc8e9d722139d747343c2baf6eef70f9d889ec47"
+    },
+    "jido-ai": {
+      "name": "jido-ai",
+      "hash": "bb9f2b0afced4b5f48502e0df7674ce40c66c2b9008905f211a9b10965ebd165"
+    },
+    "jido-core": {
+      "name": "jido-core",
+      "hash": "95f018f5cd836f946b46f7c6242aaeb90b1c3b2328fa43a846c9b5a855a1be12"
+    },
+    "jido-testing": {
+      "name": "jido-testing",
+      "hash": "0144525b2a8bdc011b70826731bbe58dad07a4d3edc0837b035a53c781199d5b"
+    },
+    "pr-review": {
+      "name": "pr-review",
+      "hash": "272ea6234b2aa87b8b2bb0813d2d30a51ff897792d4dd3e6e53e9c5d3c517aa8"
+    }
+  }
+}

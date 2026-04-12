@@ -1,0 +1,14 @@
+{
+  "name": "jido-skills",
+  "version": "0.1.0",
+  "description": "Agent Skills for the Jido ecosystem",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "validate": "node scripts/build.js --validate-only"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agentjido/jido-skills.git"
+  }
+}
