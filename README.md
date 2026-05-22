@@ -171,4 +171,4 @@ Skills follow the [agentskills.io specification](https://agentskills.io/specific
 
 ## License
 
-[Apache-2.0](LICENSE) — Copyright 2025 AgentJido Contributors
+[Apache-2.0](LICENSE) - Copyright 2026 Mike Hostetler <mike.hostetler@gmail.com>
