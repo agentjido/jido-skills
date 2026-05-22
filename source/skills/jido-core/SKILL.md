@@ -1,137 +1,116 @@
 ---
 name: jido-core
 description: >-
-  Jido ecosystem overview, conventions, and foundational patterns.
-  Load this skill when working with any Jido package. Covers the
-  ecosystem map, Elixir/OTP conventions, project structure, and
-  core design principles. Use when asked about Jido, building agents,
-  or working in a Jido-based project.
+  Provide Jido ecosystem context, package roles, conventions, and foundational
+  patterns. Use before Jido agent, action, AI, testing, docs, or package work
+  when the local repo needs shared Jido guidance.
 metadata:
   author: agentjido
-  version: "0.1.0"
+  version: "0.2.0"
 license: Apache-2.0
-compatibility: Requires Elixir 1.17+ and Erlang/OTP 26+
 ---
 
 # Jido Core
 
-Foundational skill for the Jido agent framework ecosystem.
+## Purpose
 
-## Jido Ecosystem
+Load shared Jido ecosystem context before making package-specific decisions.
+This skill is the hub for Jido framework work.
 
-| Package | Purpose | Key macro/module |
-|---------|---------|-----------------|
-| **jido** (core) | Agent framework | `use Jido.Agent`, `cmd/2`, directives, plugins, `AgentServer` |
-| **jido_action** | Composable validated actions | `use Jido.Action`, schema, `run/2` |
-| **jido_signal** | CloudEvents-based signals and routing | `Jido.Signal`, `Jido.Signal.Router` |
-| **jido_ai** | AI/LLM integration for agents | `Jido.AI`, tool-calling, prompt chains |
-| **req_llm** | HTTP client for LLM APIs | Anthropic, OpenAI, Google, Ollama |
+## When To Use
 
-## Core Design Principles
+Use this skill when working with:
 
-1. **Agents are immutable data structures** — plain structs, no hidden state.
-2. **`cmd/2` is the single entry point** — actions in → updated agent + directives out.
-3. **State changes are pure data transformations** — actions receive params, return maps.
-4. **Side effects are directives** — typed descriptions executed by the runtime, never inline.
-5. **Built on OTP** — agents run as GenServer processes (`AgentServer`) in production.
+- Jido agents, actions, directives, plugins, sensors, or signals
+- Jido package docs or examples
+- Jido AI integration
+- Tests for Jido actions or agents
+- Cross-package conventions in AgentJido repos
 
-## Project Structure Convention
+## Requirements
 
-```
-my_app/
-├── lib/my_app/
-│   ├── agents/          # Agent modules (use Jido.Agent)
-│   ├── actions/         # Action modules (use Jido.Action)
-│   ├── plugins/         # Plugin modules extending agents
-│   └── sensors/         # Sensor modules for external input
-├── test/
-├── config/
-├── mix.exs
-└── AGENTS.md
-```
+- Inspect the local repo before applying examples.
+- Read local `AGENTS.md`, `mix.exs`, and nearby modules first.
+- Prefer local APIs and conventions over examples in this skill when they
+  differ.
 
-## Elixir/OTP Conventions for Jido
+## Ecosystem Map
 
-- Always `use Jido.Agent` with `name`, `description`, and `schema`.
-- Define `signal_routes` for runtime signal handling in `AgentServer`.
-- Keep actions pure — side effects belong in directives.
-- Use NimbleOptions schemas for all validation.
-- Follow standard Elixir naming: `PascalCase` modules, `snake_case` functions.
-- Run `mix test` and `mix quality` before committing.
-- Prefer `@moduledoc` and `@doc` on all public modules and functions.
+Common package roles:
 
-## Key Types
+| Package | Role |
+| --- | --- |
+| `jido` | Core agent framework, agent state, directives, runtime concepts |
+| `jido_action` | Validated action behavior and execution building blocks |
+| `jido_signal` | Signal model and routing concepts |
+| `jido_ai` | AI agent integration and skill/tool prompt composition |
+| `req_llm` | LLM provider HTTP client and request layer |
+| `jido_*` packages | Domain-specific adapters, runtimes, tools, or examples |
 
-| Type | Description |
-|------|-------------|
-| `Jido.Agent.t()` | The agent struct — immutable, holds state and metadata |
-| `Jido.Instruction.t()` | Action + params tuple passed to `cmd/2` |
-| `Jido.Signal.t()` | CloudEvents envelope carrying event data |
+Do not assume every repo depends on every package. Confirm with `mix.exs`.
 
-### Directive Types
+## Core Principles
 
-| Directive | Effect |
-|-----------|--------|
-| `Emit` | Dispatch a signal to the bus |
-| `Spawn` | Spawn a BEAM child process |
-| `SpawnAgent` | Spawn a child Jido agent |
-| `StopChild` | Stop a tracked child process |
-| `Schedule` | Send a delayed message |
-| `Stop` | Stop the agent process |
-
-## Quick Example
-
-```elixir
-defmodule MyApp.Agents.Counter do
-  use Jido.Agent,
-    name: "counter",
-    description: "A simple counter agent",
-    schema: [
-      count: [type: :integer, default: 0]
-    ],
-    actions: [MyApp.Actions.Increment]
-
-  signal_routes do
-    on "counter.increment", do: act(MyApp.Actions.Increment)
-  end
-end
-
-defmodule MyApp.Actions.Increment do
-  use Jido.Action,
-    name: "increment",
-    description: "Increment the counter by a given amount",
-    schema: [
-      amount: [type: :integer, default: 1]
-    ]
-
-  @impl true
-  def run(params, context) do
-    current = context.state.count
-    {:ok, %{count: current + params.amount}}
-  end
-end
-
-# Usage
-{:ok, agent} = Counter.new()
-{agent, directives} = Counter.cmd(agent, {Increment, %{amount: 5}})
-agent.state.count
-#=> 5
-```
-
-## Available Reference Docs
-
-For deeper information, read these files:
-
-- `reference/agents.md` — Agent definition, schema, `cmd/2`, plugins, `AgentServer`
-- `reference/actions.md` — Action behaviour, `run/2`, schema validation, composition
-- `reference/directives.md` — Directive types, runtime processing, custom directives
+- Agents model state and command handling.
+- Actions encapsulate focused behavior behind validated inputs and explicit
+  return values.
+- Side effects should happen at documented runtime boundaries, not hidden in
+  pure decision code.
+- Signals are the cross-boundary message format when a package uses the signal
+  runtime.
+- Zoi-first schemas are preferred for new code when the repo supports them;
+  preserve existing NimbleOptions patterns in older code unless migration is in
+  scope.
+- Tests should prove behavior first and runtime wiring second.
 
 ## Workflow
 
-When working in a Jido project:
+1. Read the repo-local guidance:
 
-1. **Identify the package** — which Jido library is involved?
-2. **Check the agent** — read the agent module for schema and actions.
-3. **Trace through `cmd/2`** — follow action → state update → directives.
-4. **Run tests** — `mix test` for correctness, `mix quality` for lint/format/dialyzer.
-5. **Load deeper skills** — load package-specific skills (jido-actions, jido-signals, jido-ai) as needed.
+   ```bash
+   sed -n '1,220p' AGENTS.md 2>/dev/null || true
+   sed -n '1,220p' mix.exs
+   ```
+
+2. Identify package role from `mix.exs`, modules under `lib/`, and existing
+   tests.
+
+3. Choose the narrower skill:
+
+   - `jido-agent` for agent modules and runtime behavior
+   - `jido-action` for action modules and action schemas
+   - `jido-ai` for LLM, tools, and AI agent integration
+   - `jido-testing` for test strategy
+
+4. Follow existing repo patterns unless they conflict with current user intent
+   or documented project standards.
+
+5. Validate with repo-local commands. Prefer documented aliases; otherwise use
+   `mix test` and focused compile checks.
+
+## Output Expectations
+
+When using this skill to guide work, report:
+
+- Which local repo conventions were found
+- Which Jido package role applies
+- Which narrower skill was used next
+- Which validation command proves the change
+
+## Guardrails
+
+- Do not paste large API references into responses; load reference files only
+  when needed.
+- Do not force Zoi migration into unrelated work.
+- Do not introduce new runtime patterns without checking existing modules.
+- Do not assume release, docs, or CI commands exist across all repos.
+
+## Reference Docs
+
+Load these only when needed:
+
+- `reference/agents.md` for agent definition, schema, `cmd/2`, plugins, and
+  runtime concepts
+- `reference/actions.md` for action behavior, `run/2`, validation, and
+  composition
+- `reference/directives.md` for directive types and runtime processing
